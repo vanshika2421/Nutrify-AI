@@ -1,0 +1,5 @@
+import {ReactNode} from 'react';
+export function PageHeader({eyebrow,title,subtitle,action}:{eyebrow:string,title:string,subtitle?:string,action?:ReactNode}){return <div className="flex flex-wrap items-end justify-between gap-4 mb-7"><div><div className="eyebrow mb-2">{eyebrow}</div><h1 className="text-3xl md:text-[34px] font-extrabold">{title}</h1>{subtitle&&<p className="text-sm text-gray-500 mt-2">{subtitle}</p>}</div>{action}</div>}
+export function Card({children,className=''}:{children:ReactNode,className?:string}){return <section className={`panel p-5 ${className}`}>{children}</section>}
+export function Empty({title,desc}:{title:string,desc:string}){return <div className="text-center py-12"><div className="w-12 h-12 rounded-2xl bg-[#f1f3e8] mx-auto mb-3 flex items-center justify-center text-[#7d9631]">✦</div><div className="font-bold">{title}</div><p className="text-sm text-gray-500 mt-1">{desc}</p></div>}
+export function Loading(){return <div className="animate-pulse h-36 rounded-2xl bg-gray-200/70"/>}

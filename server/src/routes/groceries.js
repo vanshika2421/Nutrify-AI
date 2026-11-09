@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import GroceryList from '../models/GroceryList.js';
+import Meal from '../models/Meal.js';
+import { requireAuth } from '../middleware/auth.js';
+const router=Router();router.use(requireAuth);
+router.get('/',async(req,res,next)=>{try{const lists=await GroceryList.find({user:req.user._id}).sort({createdAt:-1});res.json({lists});}catch(e){next(e)}});
+router.post('/',async(req,res,next)=>{try{const list=await GroceryList.create({user:req.user._id,title:req.body.title||'My grocery list',items:req.body.items||[],weekOf:req.body.weekOf||''});res.status(201).json({list});}catch(e){next(e)}});
+router.post('/generate',async(req,res,next)=>{try{const start=req.body.start||new Date().toISOString().slice(0,10);const end=req.body.end||start;const meals=await Meal.find({user:req.user._id,date:{$gte:start,$lte:end}}).populate('recipe');const aggregate=new Map();for(const m of meals){for(const ing of (m.recipe?.ingredients||[])){const key=ing.name.toLowerCase();const old=aggregate.get(key)||{name:ing.name,quantity:0,unit:ing.unit};old.quantity+=Number(ing.quantity||1)*Number(m.servings||1);aggregate.set(key,old);}}const list=await GroceryList.create({user:req.user._id,title:'Generated from meal plan',weekOf:start,items:[...aggregate.values()]});res.status(201).json({list});}catch(e){next(e)}});
+router.patch('/:id/items/:itemId',async(req,res,next)=>{try{const list=await GroceryList.findOne({_id:req.params.id,user:req.user._id});if(!list)return res.status(404).json({message:'List not found'});const item=list.items.id(req.params.itemId);if(!item)return res.status(404).json({message:'Item not found'});item.checked=Boolean(req.body.checked);await list.save();res.json({list});}catch(e){next(e)}});
+export default router;
