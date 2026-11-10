@@ -1,5 +1,5 @@
 import axios from 'axios';
-const base=import.meta.env.VITE_API_URL||'http://localhost:5000/api';
+const base = import.meta.env.VITE_API_URL || 'https://nutrify-ai.onrender.com/api';
 export const api=axios.create({baseURL:base,withCredentials:true,headers:{'Content-Type':'application/json'}});
 let accessToken:string|null=localStorage.getItem('nutrify_access');
 export const setToken=(token:string|null)=>{accessToken=token;if(token)localStorage.setItem('nutrify_access',token);else localStorage.removeItem('nutrify_access');};
